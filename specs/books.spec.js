@@ -1,130 +1,95 @@
-import supertest from "supertest";
+import { Severity, Status } from "jest-allure/dist/Reporter.js";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import config from '../framework/config/bookstore.js'
-import { generateUser } from "../framework/fixtures/user.js";
-
-const { url } = config
+import bookEntity from '../framework/services/bookcontroller.js'
+import userEntity from '../framework/services/usercontroller.js'
 
 describe('Working condition of books API for user', () => {
 
-    let user;
-    beforeEach(() => {
-        user = generateUser()
+    let token;
+    beforeEach(async () => {
+        token = await userEntity.getAuthToken({
+            userName: config.credentials.userName,
+            password: config.credentials.password
+        })
     })
 
-    it('Creating a book for the user', async function () {
+    it('Add book to user list', async function () {
 
-        const response = await supertest(url)
-            .post('/Account/v1/User')
-            .set('Accept', 'application/json')
-            .send(user)
+       const isbn = '9781593277574'
+       const addBookResponse = await bookEntity.addBook({
+           userId: config.userID,
+           token: token,
+           isbns: [isbn]
 
-        const userToken = await supertest(url)
-            .post('/Account/v1/GenerateToken')
-            .set('Accept', 'application/json')
-            .send(user)
+       })
 
-        const addBook = await supertest(url)
-            .post('/BookStore/v1/Books')
-            .set('Authorization', `Bearer ${userToken.body.token}`)
-            .send({
-                "userId": response.body.userID,
-                "collectionOfIsbns": [
-                    {
-                        "isbn": "9781449325862"
-                    }
-                ]
-            })
-
-        expect(addBook.status).toBe(201)
-        expect(addBook.body).toEqual({
+        expect(addBookResponse.body).toEqual({
             "books": [
                 {
-                    "isbn": "9781449325862"
+                    "isbn": isbn
                 }
             ]
         })
+        expect(addBookResponse.status).toBe(201)
+
     })
 
     it('Updating book for the user', async function () {
 
-        const response = await supertest(url)
-            .post('/Account/v1/User')
-            .set('Accept', 'application/json')
-            .send(user)
+        const isbn = '9781593275846'
+        const bookNumber = '9781593277574'
+        const updateBookResponse = await bookEntity.updateBook({
+            userId: config.userID,
+            token: token,
+            isbn: isbn,
+            bookId: bookNumber
+        })
 
-        const userToken = await supertest(url)
-            .post('/Account/v1/GenerateToken')
-            .set('Accept', 'application/json')
-            .send(user)
-
-        const addBook = await supertest(url)
-            .post('/BookStore/v1/Books')
-            .set('Authorization', `Bearer ${userToken.body.token}`)
-            .send({
-                "userId": response.body.userID,
-                "collectionOfIsbns": [
-                    {
-                        "isbn": "9781449325862"
-                    }
-                ]
-            })
-
-        const updateBook = await supertest(url)
-            .put('/BookStore/v1/Books/' + '9781449325862')
-            .set('Authorization', `Bearer ${userToken.body.token}`)
-            .send({
-                "userId": response.body.userID,
-                "isbn": "9781491950296"
-            })
-
-        expect(updateBook.status).toBe(200)
+        expect(updateBookResponse.status).toBe(200)
     })
 
     it('Deleting book for the user', async function () {
 
-        const response = await supertest(url)
-            .post('/Account/v1/User')
-            .set('Accept', 'application/json')
-            .send(user)
+        const isbn = '9781593275846'
+        const deleteBookResponse = await bookEntity.deleteBook({
+            userId: config.userID,
+            token: token,
+            isbn: isbn
+        })
 
-        const userToken = await supertest(url)
-            .post('/Account/v1/GenerateToken')
-            .set('Accept', 'application/json')
-            .send(user)
+        expect(deleteBookResponse.status).toBe(204)
+    });
 
-        const addBook = await supertest(url)
-            .post('/BookStore/v1/Books')
-            .set('Authorization', `Bearer ${userToken.body.token}`)
-            .send({
-                "userId": response.body.userID,
-                "collectionOfIsbns": [
-                    {
-                        "isbn": "9781449325862"
-                    }
-                ]
-            })
+    it('Get information about book', async function () {
 
-        const deleteBook = await supertest(url)
-            .delete('/BookStore/v1/Book')
-            .set('Authorization', `Bearer ${userToken.body.token}`)
-            .send({
-                "isbn": "9781449325862",
-                "userId": response.body.userID
-            })
+        const isbn = '9781593277574'
+        const getBookInformation = await bookEntity.getBookInformation(isbn)
 
-        expect(deleteBook.status).toBe(204)
+
+        expect(getBookInformation.status).toBe(200)
+        expect(getBookInformation.body).toEqual({
+            "isbn": "9781593277574",
+            "title": "Understanding ECMAScript 6",
+            "subTitle": "The Definitive Guide for JavaScript Developers",
+            "author": "Nicholas C. Zakas",
+            "publish_date": "2016-09-03T00:00:00.000Z",
+            "publisher": "No Starch Press",
+            "pages": 352,
+            "description": "ECMAScript 6 represents the biggest update to the core of JavaScript in the history of the language. In Understanding ECMAScript 6, expert developer Nicholas C. Zakas provides a complete guide to the object types, syntax, and other exciting changes that E",
+            "website": "https://leanpub.com/understandinges6/read"
+        })
     });
 })
 
-describe('Getting information about a book', () => {
-    it('GET /BookStore/v1/Book', async function () {
-        let getBookInfo = await supertest(url)
-            .get('/BookStore/v1/Book?ISBN=9781491904244')
-            .set('Accept', 'application/json')
-            .send()
-
-        expect(getBookInfo.status).toBe(200)
-    });
-})
+// describe('Getting information about a book', () => {
+//     it('GET /BookStore/v1/Book', async function () {
+//         let getBookInfo = await supertest(url)
+//             .get('/BookStore/v1/Book?ISBN=9781491904244')
+//             .set('Accept', 'application/json')
+//             .send()
+//
+//         expect(getBookInfo.status).toBe(200)
+//     });
+// })
