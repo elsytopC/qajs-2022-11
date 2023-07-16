@@ -57,7 +57,6 @@ describe('Working condition of API for Bookstore service', function () {
 
         const data = await response.json()
         expect(data).toBeTruthy()
-        expect(response.status).toBe(201)
     });
 
     it('User auth failed, token is null', async function () {

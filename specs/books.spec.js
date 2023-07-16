@@ -5,6 +5,12 @@ import config from '../framework/config/bookstore.js'
 import bookEntity from '../framework/services/bookcontroller.js'
 import userEntity from '../framework/services/usercontroller.js'
 
+beforeEach(() => {
+    reporter.addLabel('TEST Level', 'API')
+    reporter.addEnvironment('Stand', 'LOCAL')
+    reporter.addEnvironment('URL', 'baseURL')
+})
+
 describe('Working condition of books API for user', () => {
 
     let token;
@@ -16,13 +22,15 @@ describe('Working condition of books API for user', () => {
     })
 
     it('Add book to user list', async function () {
+        reporter.description('Book added to your list')
+        reporter.epic('Books API')
+        reporter.feature('Adding book to your list')
 
-       const isbn = '9781593277574'
-       const addBookResponse = await bookEntity.addBook({
+        const isbn = '9781593277574'
+        const addBookResponse = await bookEntity.addBook({
            userId: config.userID,
            token: token,
            isbns: [isbn]
-
        })
 
         expect(addBookResponse.body).toEqual({
@@ -38,6 +46,10 @@ describe('Working condition of books API for user', () => {
 
     it('Updating book for the user', async function () {
 
+        reporter.description('Book updated in your list')
+        reporter.epic('Books API')
+        reporter.feature('Updating book in your list')
+
         const isbn = '9781593275846'
         const bookNumber = '9781593277574'
         const updateBookResponse = await bookEntity.updateBook({
@@ -52,6 +64,10 @@ describe('Working condition of books API for user', () => {
 
     it('Deleting book for the user', async function () {
 
+        reporter.description('Book deleted in your list')
+        reporter.epic('Books API')
+        reporter.feature('Deleting book in your list')
+
         const isbn = '9781593275846'
         const deleteBookResponse = await bookEntity.deleteBook({
             userId: config.userID,
@@ -63,6 +79,10 @@ describe('Working condition of books API for user', () => {
     });
 
     it('Get information about book', async function () {
+
+        reporter.description('Got information about book in your list')
+        reporter.epic('Books API')
+        reporter.feature('Getting information about book in your list')
 
         const isbn = '9781593277574'
         const getBookInformation = await bookEntity.getBookInformation(isbn)
@@ -83,13 +103,3 @@ describe('Working condition of books API for user', () => {
     });
 })
 
-// describe('Getting information about a book', () => {
-//     it('GET /BookStore/v1/Book', async function () {
-//         let getBookInfo = await supertest(url)
-//             .get('/BookStore/v1/Book?ISBN=9781491904244')
-//             .set('Accept', 'application/json')
-//             .send()
-//
-//         expect(getBookInfo.status).toBe(200)
-//     });
-// })
