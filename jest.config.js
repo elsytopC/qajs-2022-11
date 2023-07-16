@@ -3,7 +3,13 @@ export default {
         "transform": {
             "^.+\\.[t|j]sx?$": "babel-jest",
         },
-    reporters: ['default', 'jest-allure'],
+    reporters: [
+        "default",
+    ["./node_modules/jest-html-reporter", {
+    "pageTitle": "Test Report"
+    }]
+    ],
+    //reporters: ['default', 'jest-allure'],
     testRunner: 'jest-jasmine2',
     setupFilesAfterEnv: ['jest-allure/dist/setup'],
 }
