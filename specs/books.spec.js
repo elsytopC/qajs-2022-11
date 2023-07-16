@@ -1,4 +1,3 @@
-import { Severity, Status } from "jest-allure/dist/Reporter.js";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import config from '../framework/config/bookstore.js'
