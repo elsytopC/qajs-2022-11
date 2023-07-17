@@ -10,6 +10,10 @@ export default {
         "darkTheme": true
     }]
     ],
+    coverageReporters: [
+        "text-summary",
+        "lcov",
+    ],
     //reporters: ['default', 'jest-allure'],
     testRunner: 'jest-jasmine2',
     setupFilesAfterEnv: ['jest-allure/dist/setup'],

@@ -25,7 +25,7 @@ describe('Working condition of books API for user', () => {
         reporter.epic('Books API')
         reporter.feature('Adding book to your list')
 
-        const isbn = '9781593277574'
+        const isbn = '9781449331818'
         const addBookResponse = await bookEntity.addBook({
            userId: config.userID,
            token: token,
@@ -50,7 +50,7 @@ describe('Working condition of books API for user', () => {
         reporter.feature('Updating book in your list')
 
         const isbn = '9781593275846'
-        const bookNumber = '9781593277574'
+        const bookNumber = '9781449331818'
         const updateBookResponse = await bookEntity.updateBook({
             userId: config.userID,
             token: token,
